@@ -42,6 +42,7 @@ namespace RainbowLighting
         {
             hue = ((hue + 2) % 360);
         }
+        #region Unused
         private void HsvToRgb(double h, double S, double V, out int r, out int g, out int b)
         {
             double H = h;
@@ -142,6 +143,7 @@ namespace RainbowLighting
             if (i > 255) return 255;
             return i;
         }
+        #endregion
         private int _hueA, _hueB;
     }
 }
