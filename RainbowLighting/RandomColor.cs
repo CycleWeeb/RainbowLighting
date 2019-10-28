@@ -4,11 +4,6 @@ namespace RainbowLighting
 {
     internal class RandomColor : SimpleColorSO
     {
-        public override void SetColor(Color c)
-        {
-            this._color = c;
-        }
-
         public override Color color
         {
             get

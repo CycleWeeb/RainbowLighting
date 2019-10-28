@@ -1,47 +1,76 @@
 ﻿using System;
 using UnityEngine;
+using System.Collections.Generic;
+using IPALogger = IPA.Logging.Logger;
 
 namespace RainbowLighting
 {
     class ColorManagerPlus : ColorManager
     {
-        ColorManagerPlus()
+        const int skipCount = 10;
+        List<Color> colorsA;
+        List<Color> colorsB;
+        int counterA = 0;
+        int counterB = 0;
+        int idleA = skipCount;
+        int idleB = skipCount;
+        IPALogger logger;
+        public ColorManagerPlus()
         {
-            this._hueA = 240;
-            this._hueB = 0;
+            colorsA = Rainbows();
+            colorsB = Rainbows2();
+            
+            
+        }
+        public void SetLogger(IPALogger log)
+        {
+            logger = log;
+            /*
+            logger.Log(IPALogger.Level.Info, "In Constructor");
+            foreach (Color i in colorsA)
+            {
+                logger.Log(IPALogger.Level.Info, i.ToString());
+            }
+            foreach (Color i in colorsB)
+            {
+                logger.Log(IPALogger.Level.Info, i.ToString());
+            }
+            */
         }
         public override Color ColorForSaberType(Saber.SaberType type) //currently this doesnt work
         {
-            Color rgbColor;
-            float hue, saturation, value;
             if (type == Saber.SaberType.SaberB)
             {
-                rgbColor = this._saberBColor;
-                Color.RGBToHSV(_saberBColor, out hue, out saturation, out value);
-                saturation = 1f; value = 1f;
-                hue = _hueB;
-                return Color.HSVToRGB(hue, saturation, value);
+                if (--idleB == 0)
+                {
+                    idleB = skipCount;
+                    if(++counterB == colorsB.Count)
+                    {
+                        counterB = 0;
+                    }
+                    //logger.Log(IPALogger.Level.Info, string.Format("Saber color B index = {0}", counterB));
+                    _saberBColor.SetColor(colorsB[counterB]);
+                    //logger.Log(IPALogger.Level.Info, _saberBColor.ToString());
+                }
+                return _saberBColor;
             }
             else
             {
-                rgbColor = this._saberAColor;
-                Color.RGBToHSV(_saberAColor, out hue, out saturation, out value);
-                saturation = 1f; value = 1f;
-                hue = _hueA;
-                return Color.HSVToRGB(hue, saturation, value);
+                if (--idleA == 0)
+                {
+                    idleA = skipCount;
+                    if (++counterA == colorsA.Count)
+                    {
+                        counterA = 0;
+                    }
+                    //logger.Log(IPALogger.Level.Info, string.Format("Saber color A index = {0}", counterA));
+                    _saberAColor.SetColor(colorsA[counterA]);
+                    //logger.Log(IPALogger.Level.Info, _saberAColor.ToString());
+                }
+                return _saberAColor;
             }
         }
-        public void UpdateColorFrame()
-        {
-            RotateColor(ref this._hueA);
-            RotateColor(ref this._hueB);
-            
-        }
-        
-        private void RotateColor(ref int hue)
-        {
-            hue = ((hue + 2) % 360);
-        }
+
         #region Unused
         private void HsvToRgb(double h, double S, double V, out int r, out int g, out int b)
         {
@@ -144,6 +173,87 @@ namespace RainbowLighting
             return i;
         }
         #endregion
-        private int _hueA, _hueB;
+        #region Literal Rainbows
+        public List<Color> Rainbows()
+        {
+            List<Color> colors = new List<Color>();
+            int r = 255;
+            int g = 0;
+            int b = 255;
+            while(b > 0)
+            {
+                b--;
+                colors.Add(new Color(r, g, b));
+                
+            }
+            while(g < 255)
+            {
+                g++;
+                colors.Add(new Color(r, g, b));
+            }
+            while(r > 0)
+            {
+                r--;
+                colors.Add(new Color(r, g, b));
+            }
+            while(b < 255)
+            {
+                b++;
+                colors.Add(new Color(r, g, b));
+            }
+            while(g > 0)
+            {
+                g--;
+                colors.Add(new Color(r, g, b));
+            }
+            while(r < 255)
+            {
+                r++;
+                colors.Add(new Color(r, g, b));
+            }
+            colors.Add(new Color(r, g, b));
+            return colors;
+        }
+        public List<Color> Rainbows2()
+        {
+            List<Color> colors = new List<Color>();
+            int r = 255;
+            int g = 255;
+            int b = 0;
+            while (r > 0)
+            {
+                r--;
+                colors.Add(new Color(r, g, b));
+            }
+            while (b < 255)
+            {
+                b++;
+                colors.Add(new Color(r, g, b));
+            }
+            while (g > 0)
+            {
+                g--;
+                colors.Add(new Color(r, g, b));
+            }
+            while (r < 255)
+            {
+                r++;
+                colors.Add(new Color(r, g, b));
+            }
+            while (b > 0)
+            {
+                b--;
+                colors.Add(new Color(r, g, b));
+            }
+            while (g < 255)
+            {
+                g++;
+                colors.Add(new Color(r, g, b));
+            }
+            colors.Add(new Color(r, g, b));
+            return colors;
+        }
+        #endregion
+        
     }
 }
